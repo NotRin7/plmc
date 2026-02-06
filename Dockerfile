@@ -2,6 +2,7 @@
 FROM node:20-slim
 
 # Install dependencies for building native modules and electron-builder
+# Adding ca-certificates to fix SSL issues when downloading electron
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
@@ -10,8 +11,12 @@ RUN apt-get update && apt-get install -y \
     libudev-dev \
     wine \
     wine64 \
+    ca-certificates \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+# Fix for "certificate signed by unknown authority" in some environments
+RUN update-ca-certificates
 
 WORKDIR /app
 
