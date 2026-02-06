@@ -241,7 +241,7 @@ export default function App() {
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <img src="/logo_3.png" alt="PLMC" width={32} height={32} />
+            <img src="logo_3.png" alt="PLMC" width={32} height={32} />
             <Typography variant="h6" fontWeight={700}>
               {strings.app_title}
             </Typography>

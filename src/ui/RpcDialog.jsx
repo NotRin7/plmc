@@ -9,7 +9,8 @@ import {
   FormControlLabel,
   Switch,
   MenuItem,
-  Stack
+  Stack,
+  Divider
 } from '@mui/material';
 import { STRINGS } from './strings';
 

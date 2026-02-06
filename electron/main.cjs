@@ -155,7 +155,7 @@ function createWindow() {
     height: 800,
     backgroundColor: '#050505',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: false,
@@ -167,9 +167,6 @@ function createWindow() {
 
   const isDev = process.env.NODE_ENV === 'development';
   
-  // Debug: Open DevTools automatically to see errors
-  win.webContents.openDevTools({ mode: 'detach' });
-
   if (isDev) {
     win.loadURL('http://localhost:5173');
     if (process.env.ELECTRON_DEVTOOLS === '1') {
