@@ -357,8 +357,8 @@ export class Wallet {
     const feeRateSatPerVByte = Math.max(1, this.rpcConfig?.feeRate || 1);
 
     const payment = amountPlm && amountPlm > 0 ? amountPlm : 0;
-    const dustOutput = payment > 0 ? 0 : 0.00001;
-    const recipientAmount = payment + dustOutput;
+    const dustThreshold = 0.00001; // Minimum relay fee / dust limit safety
+    const recipientAmount = Math.max(dustThreshold, payment);
 
     let inputTotal = 0;
     let numInputsSelected = 0;
@@ -624,10 +624,6 @@ export class Wallet {
     const contacts = (await this.getContacts()).filter((c) => c.id !== contactId);
     const storageKey = this.getStorageKey('palladium_contacts');
     localStorage.setItem(storageKey, JSON.stringify(contacts));
-
-    if (this.isElectrum()) {
-      await this.scanContactHistory(pubKeyHex);
-    }
   }
 
   persistAllMessages() {
