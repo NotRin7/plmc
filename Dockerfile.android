@@ -1,0 +1,11 @@
+# Dockerfile for building Android APK
+FROM mingchen/android-build:latest
+
+# Install Node.js
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+WORKDIR /app
+
+# The build command will be:
+# npm install && npm run build && npx cap sync && cd android && ./gradlew assembleDebug

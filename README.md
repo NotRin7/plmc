@@ -130,11 +130,18 @@ npm run android:sync
 ```
 
 ### 2. Build APK (Manual)
-Since building an APK requires the Android SDK, you need to open the project in **Android Studio**:
+Since building an APK requires the Android SDK, you can open the project in **Android Studio**:
 ```bash
 npm run android:open
 ```
 In Android Studio, go to **Build → Build Bundle(s) / APK(s) → Build APK(s)**.
+
+### 3. Build APK (Docker - Recommended)
+If you don't want to install Android Studio, use the provided Docker environment:
+```bash
+npm run docker:build:android
+```
+The finished `.apk` will be in the `release/` folder.
 
 ---
 

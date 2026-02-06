@@ -15,7 +15,8 @@
     "electron:build": "npm run build && electron-builder",
     "electron:build:all": "npm run build && electron-builder --win --linux",
     "android:sync": "npm run build && npx cap sync",
-    "android:open": "npx cap open android"
+    "android:open": "npx cap open android",
+    "docker:build:android": "docker-compose up android-builder"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.2",
