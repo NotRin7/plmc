@@ -12,14 +12,12 @@ import {
   IconButton,
   Tooltip
 } from '@mui/material';
-import {
-  ContentCopy as CopyIcon,
-  Done as SentIcon,
-  DoneAll as ConfirmedIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon
-} from '@mui/icons-material';
+import CopyIcon from '@mui/icons-material/ContentCopy';
+import SentIcon from '@mui/icons-material/Done';
+import ConfirmedIcon from '@mui/icons-material/DoneAll';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { STRINGS } from './strings';
 
 export default function ChatPanel({

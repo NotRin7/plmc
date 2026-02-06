@@ -9,14 +9,12 @@ import {
   Typography,
   IconButton
 } from '@mui/material';
-import {
-  Settings as SettingsIcon,
-  Security as SecurityIcon,
-  DisplaySettings as DisplayIcon,
-  RestartAlt as ResetIcon,
-  DeleteForever as DeleteIcon,
-  Memory as CacheIcon
-} from '@mui/icons-material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SecurityIcon from '@mui/icons-material/Security';
+import DisplayIcon from '@mui/icons-material/DisplaySettings';
+import ResetIcon from '@mui/icons-material/RestartAlt';
+import DeleteIcon from '@mui/icons-material/DeleteForever';
+import CacheIcon from '@mui/icons-material/Memory';
 import { wallet } from '../wallet/Wallet';
 import { STRINGS } from './strings';
 
