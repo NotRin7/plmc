@@ -153,17 +153,23 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    backgroundColor: '#050505',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false
+      webSecurity: false,
+      sandbox: false
     },
     autoHideMenuBar: true,
     icon: path.join(__dirname, '../public/logo_3.png')
   });
 
   const isDev = process.env.NODE_ENV === 'development';
+  
+  // Debug: Open DevTools automatically to see errors
+  win.webContents.openDevTools({ mode: 'detach' });
+
   if (isDev) {
     win.loadURL('http://localhost:5173');
     if (process.env.ELECTRON_DEVTOOLS === '1') {
