@@ -187,10 +187,16 @@ export default function App() {
         setError('Public key required');
         return;
       }
+      const exists = contactsRef.current.find((c) => c.id === pubKey);
+      if (exists) {
+        setError('Contact already exists');
+        setContactDialog({ open: false, mode: 'add', contact: null });
+        return;
+      }
       await wallet.addContact(pubKey, name);
       // Dopo aver aggiunto un contatto, cerca messaggi storici con quel contatto
       await wallet.scanContactHistory(pubKey);
-      // Poi fai anche un rescan normale per aggiornare i messaggi inviati
+      // Poi fai auch un rescan normale per aggiornare i messaggi inviati
       await wallet.scanChain();
       setRefreshTick((tick) => tick + 1);
     } else if (contactDialog.contact) {
