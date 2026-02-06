@@ -1,0 +1,21 @@
+{
+  "name": "PLMC - Palladium Secure Chat",
+  "short_name": "PLMC",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#10b981",
+  "description": "PLMC - Palladium Secure Chat on the Palladium Blockchain.",
+  "icons": [
+    {
+      "src": "logo_3.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo_3.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
