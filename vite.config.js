@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'dist',
-    target: 'esnext'
+    target: 'es2022'
   },
   server: {
     port: 5173,
