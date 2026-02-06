@@ -104,6 +104,30 @@ Outputs are placed in `release/`.
 
 ---
 
+## 🐳 Docker Build (Recommended)
+
+You can build the application for **Linux** and **Windows** using Docker without installing native dependencies on your host machine.
+
+### Build all platforms
+```bash
+docker-compose up --build
+```
+
+This will:
+1. Install all dependencies in a container.
+2. Build the Linux AppImage and Windows (.exe) installer.
+3. Place the results in the `release/` folder on your host.
+
+---
+
+## 🎨 Modern UI & Features
+- **Cyberpunk Dark Theme:** Modern look with Orbitron and Space Grotesk fonts.
+- **Glassmorphism:** High-tech panels with blur effects.
+- **Cross-Platform:** Native support for Linux and Windows.
+- **Multi-language:** Supports English, German, Italian, and Russian.
+
+---
+
 ## Configuration
 Defaults (editable in Settings):
 - **Host:** `palladiumblockchain.net`
