@@ -88,53 +88,51 @@ export default function ChatPanel({
 
   return (
     <Box className="chat-layout" sx={{ minHeight: 0 }}>
-      <Card elevation={2} className="contact-list" sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <CardContent sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-          <Stack spacing={1} sx={{ flex: 1, minHeight: 0 }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle1" fontWeight={700}>
+      <Box className="tech-panel contact-list" sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 1 }}>
+              <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Orbitron' }}>
                 {strings.contacts_title}
               </Typography>
-              <Button size="small" onClick={onAddContact}>
-                {strings.btn_new_contact}
+              <Button size="small" variant="text" onClick={onAddContact} sx={{ minWidth: 0, p: 0.5 }}>
+                <Typography variant="h6">+</Typography>
               </Button>
             </Stack>
-            <Divider />
+            <Divider sx={{ opacity: 0.1 }} />
             <List dense sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               {contacts.map((contact) => (
                 <ListItemButton
                   key={contact.id}
-                  selected={contact.id === activeContactId}
+                  className={`contact-item ${contact.id === activeContactId ? 'selected' : ''}`}
                   onClick={() => onSelectContact(contact.id)}
+                  sx={{ mb: 1 }}
                 >
                   <ListItemText
-                    primary={contact.name}
+                    primary={contact.name || 'Anonymous'}
                     secondary={formatPubKey(contact.id)}
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                    secondaryTypographyProps={{ sx: { fontFamily: 'Rajdhani', opacity: 0.7 } }}
                   />
                 </ListItemButton>
               ))}
             </List>
           </Stack>
-        </CardContent>
-      </Card>
+        </Box>
+      </Box>
 
-      <Card elevation={2} sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <CardContent sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      <Box className="tech-panel" sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" fontWeight={700}>
+            <Typography variant="h5" fontWeight={700} sx={{ fontFamily: 'Orbitron' }}>
               {selectedContact ? selectedContact.name : strings.lbl_select_contact}
             </Typography>
             <Stack direction="row" spacing={1}>
-              <Button size="small" onClick={onRescan}>
+              <Button size="small" variant="outlined" onClick={onRescan} sx={{ borderRadius: 20 }}>
                 {strings.btn_rescan}
               </Button>
               {selectedContact && (
-                <Button size="small" onClick={() => onRenameContact(selectedContact)}>
-                  Rename
-                </Button>
-              )}
-              {selectedContact && (
-                <Button size="small" color="error" onClick={() => onDeleteContact(selectedContact)}>
+                <Button size="small" variant="text" color="error" onClick={() => onDeleteContact(selectedContact)}>
                   Delete
                 </Button>
               )}
@@ -142,18 +140,18 @@ export default function ChatPanel({
           </Stack>
 
           {selectedContact && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="caption" sx={{ mt: 0.5, fontFamily: 'Rajdhani', opacity: 0.5 }}>
               {selectedContact.id}
             </Typography>
           )}
 
           {!hasBalance && (
-            <Typography color="warning.main" sx={{ mt: 1 }}>
+            <Typography variant="caption" color="warning.main" sx={{ mt: 1, fontWeight: 600 }}>
               {balanceInfo?.balance > 0 ? strings.warn_low_balance : strings.warn_no_balance}
             </Typography>
           )}
 
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 2, opacity: 0.1 }} />
 
           <Stack
             ref={messageListRef}
@@ -167,54 +165,52 @@ export default function ChatPanel({
                 className={`message-bubble ${msg.sender}`}
                 sx={{ alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start' }}
               >
-                <Typography variant="body1">{msg.text}</Typography>
-                <Typography variant="caption" className="message-meta" component="div">
-                  {new Date(msg.timestamp).toLocaleString()} · {formatStatus(msg.status)}
+                <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>{msg.text}</Typography>
+                <Typography variant="caption" className="message-meta" component="div" sx={{ mt: 0.5 }}>
+                  {new Date(msg.timestamp).toLocaleTimeString()} · {formatStatus(msg.status)}
                   {msg.sender === 'me' && typeof msg.amount === 'number' && msg.amount > 0 && ` · Amount: ${formatSats(msg.amount)} sat`}
-                  {msg.sender === 'me' && typeof msg.fee === 'number' && ` · Fee: ${formatSats(msg.fee)} sat`}
-                  {msg.sender === 'me' && typeof msg.totalSpent === 'number' && ` · Total: ${formatSats(msg.totalSpent)} sat`}
-                  {msg.sender !== 'me' && typeof msg.amount === 'number' && ` · ${formatSats(msg.amount)} sat`}
                 </Typography>
-                {showTxid && msg.txid && (
-                  <Typography variant="caption" className="message-meta" component="div">
-                    TXID: {msg.txid}
-                  </Typography>
-                )}
               </Box>
             ))}
           </Stack>
 
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 2, opacity: 0.1 }} />
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-end">
             <TextField
               fullWidth
               placeholder={strings.placeholder_message}
               value={messageText}
               onChange={(event) => setMessageText(event.target.value)}
               multiline
-              minRows={2}
+              maxRows={4}
               disabled={!selectedContact}
+              variant="outlined"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'rgba(255,255,255,0.02)' } }}
             />
-            <TextField
-              label={strings.amount_label}
-              value={amountText}
-              onChange={(event) => setAmountText(event.target.value)}
-              type="number"
-              sx={{ width: 160 }}
-              inputProps={{ step: 1, min: 0 }}
-              disabled={!selectedContact}
-            />
-            <Button
-              variant="contained"
-              onClick={handleSend}
-              disabled={!selectedContact || !messageText.trim()}
-            >
-              {strings.btn_send}
-            </Button>
+            <Stack direction="row" spacing={1}>
+              <TextField
+                label={strings.amount_label}
+                value={amountText}
+                onChange={(event) => setAmountText(event.target.value)}
+                type="number"
+                size="small"
+                sx={{ width: 100, '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+                inputProps={{ step: 1, min: 0 }}
+                disabled={!selectedContact}
+              />
+              <Button
+                variant="contained"
+                onClick={handleSend}
+                disabled={!selectedContact || !messageText.trim()}
+                sx={{ borderRadius: 4, height: 40, px: 4 }}
+              >
+                {strings.btn_send}
+              </Button>
+            </Stack>
           </Stack>
-        </CardContent>
-      </Card>
+        </Box>
+      </Box>
     </Box>
   );
 }

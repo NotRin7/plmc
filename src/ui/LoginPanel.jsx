@@ -22,13 +22,19 @@ export default function LoginPanel({
   const strings = STRINGS[lang] || STRINGS.en;
 
   return (
-    <Box sx={{ maxWidth: 520, margin: '40px auto' }}>
-      <Card elevation={3}>
-        <CardContent>
-          <Stack spacing={2}>
-            <Typography variant="h5" fontWeight={700}>
-              {strings.login_title}
-            </Typography>
+    <Box sx={{ maxWidth: 520, margin: '80px auto', px: 2 }}>
+      <Card elevation={0} className="tech-panel">
+        <CardContent sx={{ p: 4 }}>
+          <Stack spacing={4}>
+            <Box>
+              <Typography variant="h4" fontWeight={700} color="primary" sx={{ mb: 1 }}>
+                {strings.login_title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Securely access the Palladium Chat network.
+              </Typography>
+            </Box>
+            
             <TextField
               label={strings.wif_label}
               value={wif}
@@ -36,6 +42,8 @@ export default function LoginPanel({
               multiline
               minRows={3}
               placeholder="L..."
+              variant="filled"
+              sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}
             />
             {error && (
               <Typography color="error" variant="body2">

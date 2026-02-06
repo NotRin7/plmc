@@ -12,7 +12,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "electron:build": "npm run build && electron-builder"
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:all": "npm run build && electron-builder --win --linux"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
