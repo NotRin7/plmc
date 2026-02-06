@@ -54,7 +54,16 @@ export const STRINGS = {
     lbl_rpc_user: 'Username',
     lbl_rpc_password: 'Password',
     amount_label: 'Amount (sat)',
-    placeholder_message: 'Type your message...'
+    placeholder_message: 'Type your message...',
+    setting_group_network: 'Network',
+    setting_group_privacy: 'Privacy & History',
+    setting_group_display: 'Display & UI',
+    btn_force_rescan: 'Force Full Rescan',
+    btn_clear_history: 'Clear Local History',
+    btn_clear_cache: 'Clear Cache',
+    setting_sound: 'Enable sound notifications',
+    msg_confirm_clear_hist: 'Are you sure you want to delete ALL local message history? This cannot be undone.',
+    msg_confirm_clear_cache: 'Clear local transaction cache? (App will reload)'
   },
   de: {
     app_title: 'Palladium Secure Chat',
@@ -111,7 +120,16 @@ export const STRINGS = {
     lbl_rpc_user: 'Benutzername',
     lbl_rpc_password: 'Passwort',
     amount_label: 'Betrag (sat)',
-    placeholder_message: 'Nachricht eingeben...'
+    placeholder_message: 'Nachricht eingeben...',
+    setting_group_network: 'Netzwerk',
+    setting_group_privacy: 'Privatsphäre & Verlauf',
+    setting_group_display: 'Anzeige & UI',
+    btn_force_rescan: 'Kompletter Rescan erzwingen',
+    btn_clear_history: 'Lokalen Verlauf löschen',
+    btn_clear_cache: 'Cache leeren',
+    setting_sound: 'Sound-Benachrichtigungen aktivieren',
+    msg_confirm_clear_hist: 'Bist du sicher, dass du den GESAMTEN lokalen Nachrichtenverlauf löschen willst? Das kann nicht rückgängig gemacht werden.',
+    msg_confirm_clear_cache: 'Lokalen Transaktions-Cache leeren? (App wird neu geladen)'
   },
   ru: {
     app_title: 'Palladium Secure Chat',
