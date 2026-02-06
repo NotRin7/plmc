@@ -186,7 +186,16 @@ export const STRINGS = {
     lbl_rpc_user: 'Имя пользователя',
     lbl_rpc_password: 'Пароль',
     amount_label: 'Сумма (sat)',
-    placeholder_message: 'Введите сообщение...'
+    placeholder_message: 'Введите сообщение...',
+    setting_group_network: 'Сеть',
+    setting_group_privacy: 'Приватность и история',
+    setting_group_display: 'Экран и интерфейс',
+    btn_force_rescan: 'Принудительное сканирование',
+    btn_clear_history: 'Очистить историю',
+    btn_clear_cache: 'Очистить кэш',
+    setting_sound: 'Включить звуковые уведомления',
+    msg_confirm_clear_hist: 'Вы уверены, что хотите удалить ВСЮ историю сообщений? Это действие нельзя отменить.',
+    msg_confirm_clear_cache: 'Очистить локальный кэш транзакций? (Приложение перезагрузится)'
   },
   it: {
     app_title: 'Palladium Secure Chat',
@@ -243,6 +252,15 @@ export const STRINGS = {
     lbl_rpc_user: 'Nome utente',
     lbl_rpc_password: 'Password',
     amount_label: 'Importo (sat)',
-    placeholder_message: 'Scrivi il tuo messaggio...'
+    placeholder_message: 'Scrivi il tuo messaggio...',
+    setting_group_network: 'Rete',
+    setting_group_privacy: 'Privacy e cronologia',
+    setting_group_display: 'Display e UI',
+    btn_force_rescan: 'Forza scansione completa',
+    btn_clear_history: 'Cancella cronologia locale',
+    btn_clear_cache: 'Svuota cache',
+    setting_sound: 'Attiva notifiche sonore',
+    msg_confirm_clear_hist: 'Sei sicuro di voler eliminare TUTTA la cronologia locale? L\'azione è irreversibile.',
+    msg_confirm_clear_cache: 'Svuotare la cache delle transazioni? (L\'app verrà riavviata)'
   }
 };
