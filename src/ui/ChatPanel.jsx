@@ -2,16 +2,24 @@ import React from 'react';
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Divider,
   List,
   ListItemButton,
   ListItemText,
   Stack,
   TextField,
-  Typography
+  Typography,
+  IconButton,
+  Tooltip
 } from '@mui/material';
+import {
+  ContentCopy as CopyIcon,
+  Done as SentIcon,
+  DoneAll as ConfirmedIcon,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import { STRINGS } from './strings';
 
 export default function ChatPanel({
@@ -61,13 +69,15 @@ export default function ChatPanel({
     setAmountText(defaultAmountText);
   };
 
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+  };
 
   const formatPubKey = (pubKey) => {
     if (!pubKey) return '';
     if (pubKey.length <= 16) return pubKey;
     return `${pubKey.slice(0, 8)}...${pubKey.slice(-8)}`;
   };
-
 
   const formatSats = (value) => {
     if (typeof value !== 'number' || Number.isNaN(value)) return null;
@@ -76,11 +86,11 @@ export default function ChatPanel({
 
   const selectedContact = contacts.find((c) => c.id === activeContactId);
 
-  const formatStatus = (status) => {
-    if (status === 0) return strings.status_sending;
-    if (status === 1) return `${strings.status_sent} (unconfirmed)`;
-    if (status === 2) return `${strings.status_sent} ✓`;
-    return '';
+  const StatusIndicator = ({ status }) => {
+    if (status === 0) return <SentIcon sx={{ fontSize: 14, opacity: 0.5 }} />;
+    if (status === 1) return <SentIcon sx={{ fontSize: 14, color: 'primary.main' }} />;
+    if (status === 2) return <ConfirmedIcon sx={{ fontSize: 14, color: 'primary.main' }} />;
+    return null;
   };
 
   const availableBalance = allowUnconfirmedSpend ? balanceInfo?.balance : balanceInfo?.spendableBalance;
@@ -95,9 +105,9 @@ export default function ChatPanel({
               <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Orbitron' }}>
                 {strings.contacts_title}
               </Typography>
-              <Button size="small" variant="text" onClick={onAddContact} sx={{ minWidth: 0, p: 0.5 }}>
-                <Typography variant="h6">+</Typography>
-              </Button>
+              <IconButton size="small" onClick={onAddContact} color="primary">
+                <AddIcon />
+              </IconButton>
             </Stack>
             <Divider sx={{ opacity: 0.1 }} />
             <List dense sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
@@ -122,61 +132,102 @@ export default function ChatPanel({
       </Box>
 
       <Box className="tech-panel" sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5" fontWeight={700} sx={{ fontFamily: 'Orbitron' }}>
-              {selectedContact ? selectedContact.name : strings.lbl_select_contact}
-            </Typography>
-            <Stack direction="row" spacing={1}>
-              <Button size="small" variant="outlined" onClick={onRescan} sx={{ borderRadius: 20 }}>
-                {strings.btn_rescan}
-              </Button>
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          {/* Header */}
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 1, mb: 1 }}>
+            <Box>
+              <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Orbitron' }}>
+                {selectedContact ? selectedContact.name : strings.lbl_select_contact}
+              </Typography>
               {selectedContact && (
-                <Button size="small" variant="text" color="error" onClick={() => onDeleteContact(selectedContact)}>
-                  Delete
-                </Button>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Typography variant="caption" sx={{ fontFamily: 'Rajdhani', opacity: 0.5 }}>
+                    {formatPubKey(selectedContact.id)}
+                  </Typography>
+                  <Tooltip title="Copy Public Key">
+                    <IconButton size="small" onClick={() => handleCopy(selectedContact.id)} sx={{ p: 0.2 }}>
+                      <CopyIcon sx={{ fontSize: 12 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              )}
+            </Box>
+            <Stack direction="row" spacing={1}>
+              <IconButton size="small" onClick={onRescan} title={strings.btn_rescan}>
+                <RefreshIcon />
+              </IconButton>
+              {selectedContact && (
+                <IconButton size="small" color="error" onClick={() => onDeleteContact(selectedContact)}>
+                  <DeleteIcon />
+                </IconButton>
               )}
             </Stack>
           </Stack>
 
-          {selectedContact && (
-            <Typography variant="caption" sx={{ mt: 0.5, fontFamily: 'Rajdhani', opacity: 0.5 }}>
-              {selectedContact.id}
-            </Typography>
-          )}
-
           {!hasBalance && (
-            <Typography variant="caption" color="warning.main" sx={{ mt: 1, fontWeight: 600 }}>
+            <Typography variant="caption" color="warning.main" sx={{ px: 1, fontWeight: 600 }}>
               {balanceInfo?.balance > 0 ? strings.warn_low_balance : strings.warn_no_balance}
             </Typography>
           )}
 
-          <Divider sx={{ my: 2, opacity: 0.1 }} />
+          <Divider sx={{ my: 1, opacity: 0.1 }} />
 
+          {/* Chat Messages */}
           <Stack
             ref={messageListRef}
             className="message-list"
             spacing={1}
-            sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: 1 }}
+            sx={{ 
+              flex: 1, 
+              minHeight: 0, 
+              overflowY: 'auto', 
+              pr: 1, 
+              backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.02) 0%, transparent 100%)',
+              p: 2
+            }}
           >
             {messages.map((msg) => (
               <Box
                 key={msg.id}
                 className={`message-bubble ${msg.sender}`}
-                sx={{ alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start' }}
+                sx={{ 
+                  alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
+                  minWidth: 120,
+                  boxShadow: msg.sender === 'me' ? '0 2px 8px rgba(0, 242, 255, 0.1)' : '0 2px 8px rgba(0,0,0,0.2)'
+                }}
               >
-                <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>{msg.text}</Typography>
-                <Typography variant="caption" className="message-meta" component="div" sx={{ mt: 0.5 }}>
-                  {new Date(msg.timestamp).toLocaleTimeString()} · {formatStatus(msg.status)}
-                  {msg.sender === 'me' && typeof msg.amount === 'number' && msg.amount > 0 && ` · Amount: ${formatSats(msg.amount)} sat`}
-                </Typography>
+                <Typography variant="body1" sx={{ wordBreak: 'break-word', pr: 2 }}>{msg.text}</Typography>
+                
+                <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={0.5} sx={{ mt: 0.5 }}>
+                  {typeof msg.amount === 'number' && msg.amount > 0 && (
+                    <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 600, mr: 'auto', fontSize: 10 }}>
+                      +{formatSats(msg.amount)} sat
+                    </Typography>
+                  )}
+                  <Typography variant="caption" className="message-meta" sx={{ opacity: 0.6, fontSize: 10 }}>
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Typography>
+                  {msg.sender === 'me' && <StatusIndicator status={msg.status} />}
+                </Stack>
+
+                {showTxid && msg.txid && (
+                  <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.5, borderTop: '1px solid rgba(255,255,255,0.05)', pt: 0.5 }}>
+                    <Typography variant="caption" sx={{ fontSize: 9, opacity: 0.3, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      TX: {msg.txid}
+                    </Typography>
+                    <IconButton size="small" onClick={() => handleCopy(msg.txid)} sx={{ p: 0.2 }}>
+                      <CopyIcon sx={{ fontSize: 10 }} />
+                    </IconButton>
+                  </Stack>
+                )}
               </Box>
             ))}
           </Stack>
 
-          <Divider sx={{ my: 2, opacity: 0.1 }} />
+          <Divider sx={{ my: 1, opacity: 0.1 }} />
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-end">
+          {/* Input Area */}
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="flex-end" sx={{ p: 1 }}>
             <TextField
               fullWidth
               placeholder={strings.placeholder_message}
@@ -186,16 +237,18 @@ export default function ChatPanel({
               maxRows={4}
               disabled={!selectedContact}
               variant="outlined"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'rgba(255,255,255,0.02)' } }}
+              size="small"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 6, bgcolor: 'rgba(255,255,255,0.02)' } }}
             />
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} alignItems="center">
               <TextField
-                label={strings.amount_label}
+                label="sat"
                 value={amountText}
                 onChange={(event) => setAmountText(event.target.value)}
                 type="number"
                 size="small"
-                sx={{ width: 100, '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+                variant="standard"
+                sx={{ width: 60 }}
                 inputProps={{ step: 1, min: 0 }}
                 disabled={!selectedContact}
               />
@@ -203,7 +256,7 @@ export default function ChatPanel({
                 variant="contained"
                 onClick={handleSend}
                 disabled={!selectedContact || !messageText.trim()}
-                sx={{ borderRadius: 4, height: 40, px: 4 }}
+                sx={{ borderRadius: 6, height: 40, px: 3, fontWeight: 700 }}
               >
                 {strings.btn_send}
               </Button>
@@ -213,4 +266,5 @@ export default function ChatPanel({
       </Box>
     </Box>
   );
+}
 }

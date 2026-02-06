@@ -11,7 +11,7 @@ export const DEFAULT_RPC_CONFIG = {
   retentionDays: 0,
   rescanHours: 0,
   feeRate: 1,
-  defaultAmount: 300,
+  defaultAmount: 0,
   allowUnconfirmedSpend: true,
   configVersion: 3
 };

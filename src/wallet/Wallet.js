@@ -1143,7 +1143,8 @@ export class Wallet {
     // Fast check: has the status of this scripthash changed?
     const status = await this.rpc('blockchain.scripthash.subscribe', [scripthash]);
     if (status === this.scripthashStatus && this.scripthashStatus !== null) {
-      return; // No changes to history
+      // Still, check mempool for new outgoing messages that might not have triggered a status change yet
+      // Or just continue if we want to be sure
     }
     this.scripthashStatus = status;
 
@@ -1154,6 +1155,7 @@ export class Wallet {
     const tip = await this.rpc('blockchain.headers.subscribe', []);
     const tipHeight = tip?.height || 0;
 
+    // Process all history including unconfirmed (height <= 0)
     for (const item of history || []) {
       const txid = item.tx_hash;
       const confirmations = item.height > 0 ? Math.max(0, tipHeight - item.height + 1) : 0;
