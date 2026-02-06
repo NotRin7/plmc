@@ -51,12 +51,14 @@ export class Wallet {
     this.messages = {};
     this.rpcConfig = { ...DEFAULT_RPC_CONFIG };
     this.processedTxIds = new Set();
+    this.txCache = new Map();
     this.pollInterval = null;
     this.balancePollInterval = null;
     this.lastSeenTimestamps = {};
     this.keyPair = null;
     this.address = '';
     this.messageCallback = null;
+    this.scripthashStatus = null;
 
     this.loadConfig().then((saved) => {
       if (saved) {
@@ -115,10 +117,15 @@ export class Wallet {
   }
 
   async getRawTransaction(txid) {
+    if (this.txCache.has(txid)) return this.txCache.get(txid);
+    let raw;
     if (this.isElectrum()) {
-      return this.rpc('blockchain.transaction.get', [txid, false]);
+      raw = await this.rpc('blockchain.transaction.get', [txid, false]);
+    } else {
+      raw = await this.rpc('getrawtransaction', [txid]);
     }
-    return this.rpc('getrawtransaction', [txid]);
+    if (raw) this.txCache.set(txid, raw);
+    return raw;
   }
 
   getStorageKey(key) {
@@ -1132,6 +1139,13 @@ export class Wallet {
   async scanChainElectrum() {
     const scripthash = this.getScripthash();
     if (!scripthash) return;
+
+    // Fast check: has the status of this scripthash changed?
+    const status = await this.rpc('blockchain.scripthash.subscribe', [scripthash]);
+    if (status === this.scripthashStatus && this.scripthashStatus !== null) {
+      return; // No changes to history
+    }
+    this.scripthashStatus = status;
 
     const contacts = await this.getContacts();
     const contactsByAddress = new Map(contacts.map((contact) => [contact.address, contact]));

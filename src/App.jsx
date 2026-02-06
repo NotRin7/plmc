@@ -194,16 +194,19 @@ export default function App() {
         return;
       }
       await wallet.addContact(pubKey, name);
-      // Dopo aver aggiunto un contatto, cerca messaggi storici con quel contatto
-      await wallet.scanContactHistory(pubKey);
-      // Poi fai auch un rescan normale per aggiornare i messaggi inviati
-      await wallet.scanChain();
-      setRefreshTick((tick) => tick + 1);
+      await refreshContacts();
+      
+      // Background scan - don't wait for it to finish UI update
+      (async () => {
+        await wallet.scanContactHistory(pubKey);
+        await wallet.scanChain();
+        setRefreshTick((tick) => tick + 1);
+      })();
     } else if (contactDialog.contact) {
       await wallet.renameContact(contactDialog.contact.id, name);
+      await refreshContacts();
     }
     setContactDialog({ open: false, mode: 'add', contact: null });
-    refreshContacts();
   };
 
   const handleDeleteContact = async (contact) => {
