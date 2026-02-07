@@ -33,23 +33,18 @@ const wsConnections = new Map();
 async function getWebSocket(host, port) {
   const url = `wss://${host}:${port}`;
   if (wsConnections.has(url)) {
-    const ws = wsConnections.get(url);
-    if (ws.readyState === WebSocket.OPEN) return ws;
-    if (ws.readyState === WebSocket.CONNECTING) {
-      return new Promise((resolve) => {
-        const check = setInterval(() => {
-          if (ws.readyState === WebSocket.OPEN) {
-            clearInterval(check);
-            resolve(ws);
-          }
-        }, 100);
-      });
+    const existing = wsConnections.get(url);
+    if (existing.readyState === WebSocket.OPEN) return existing;
+    if (existing.readyState === WebSocket.CONNECTING) {
+      await new Promise(r => setTimeout(r, 500));
+      return getWebSocket(host, port);
     }
   }
 
+  const ws = new WebSocket(url);
+  wsConnections.set(url, ws);
+  
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(url);
-    wsConnections.set(url, ws);
     const timeout = setTimeout(() => reject(new Error('WebSocket timeout')), 10000);
     ws.onopen = () => {
       clearTimeout(timeout);
@@ -57,6 +52,7 @@ async function getWebSocket(host, port) {
     };
     ws.onerror = (err) => {
       clearTimeout(timeout);
+      wsConnections.delete(url);
       reject(err);
     };
   });
@@ -85,6 +81,13 @@ export async function rpcCall(config, method, params = []) {
       }
       
       const ws = await getWebSocket(wsHost, wsPort);
+      
+      // Ensure session is initialized with server.version if needed
+      if (method !== 'server.version' && !ws.versionHandshake) {
+        ws.versionHandshake = true;
+        await rpcCall(config, 'server.version', ['palladium-secure-chat', '1.4']);
+      }
+
       const id = Math.floor(Math.random() * 1000000);
       const payload = JSON.stringify({ jsonrpc: '2.0', id, method, params });
       
