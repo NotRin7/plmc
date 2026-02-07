@@ -75,7 +75,16 @@ export async function rpcCall(config, method, params = []) {
     
     // Browser / Web Support via WebSocket
     if (typeof window !== 'undefined' && typeof WebSocket !== 'undefined') {
-      const ws = await getWebSocket(config.ip === 'palladiumblockchain.net' ? 'wss.palladium-coin.com' : config.ip, config.port === '50002' ? '50004' : config.port);
+      let wsHost = config.ip;
+      let wsPort = config.port === '50002' ? '50004' : config.port;
+      
+      // Auto-switch to our optimized VPS endpoint if on our domain
+      if (window.location.hostname.includes('palladium-coin.com') || config.ip === 'palladiumblockchain.net') {
+        wsHost = 'wss.palladium-coin.com';
+        wsPort = '443'; // NPM will handle the SSL termination and proxy to 50004
+      }
+      
+      const ws = await getWebSocket(wsHost, wsPort);
       const id = Math.floor(Math.random() * 1000000);
       const payload = JSON.stringify({ jsonrpc: '2.0', id, method, params });
       
