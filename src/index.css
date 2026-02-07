@@ -113,28 +113,36 @@ body {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     gap: 10px;
-    padding: 10px;
+    padding: 5px;
+    height: calc(100vh - 120px);
   }
 
   .tech-panel.contact-list {
-    max-height: 200px;
+    max-height: 150px;
   }
 
   .message-bubble {
     max-width: 90%;
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 
   .app-shell {
     padding: 0 !important;
   }
 
+  .MuiBox-root {
+    padding: 10px !important;
+  }
+
   /* Make tabs more compact on mobile */
   .MuiTabs-root {
-    min-height: 40px;
+    min-height: 36px;
   }
   
   .MuiTab-root {
-    min-height: 40px;
-    font-size: 0.8rem;
+    min-height: 36px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
   }
 }

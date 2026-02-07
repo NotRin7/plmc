@@ -31,7 +31,7 @@ export default function ContactDialog({
   }, [open, initialName, initialKey]);
 
   const handleSave = () => {
-    onSave({ name, pubKey });
+    onSave({ name, pubKey: pubKey.trim().toLowerCase() });
   };
 
   return (
