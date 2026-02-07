@@ -536,21 +536,22 @@ export class Wallet {
 
   async addContact(pubKeyHex, name) {
     const contacts = await this.getContacts();
-    let derivedAddress = pubKeyHex;
+    let derivedAddress = '';
 
     try {
+      const pubkeyBuffer = typeof pubKeyHex === 'string' ? Buffer.from(pubKeyHex.trim(), 'hex') : pubKeyHex;
       const { address } = bitcoin.payments.p2wpkh({
-        pubkey: Buffer.from(pubKeyHex, 'hex'),
+        pubkey: pubkeyBuffer,
         network: PALLADIUM_NETWORK
       });
-      if (address) derivedAddress = address;
-    } catch {
-      // Keep raw hex if address derivation fails.
+      derivedAddress = address || '';
+    } catch (err) {
+      console.error('Failed to derive address from pubkey:', err);
     }
 
     const cleanName = name.trim() || `...${pubKeyHex.slice(-4)}`;
     contacts.push({
-      id: pubKeyHex,
+      id: pubKeyHex.trim(),
       address: derivedAddress,
       name: cleanName,
       unread: 0
@@ -571,19 +572,20 @@ export class Wallet {
     if (idx !== -1) {
       contacts[idx].name = name;
     } else {
-      let derivedAddress = pubKeyHex;
+      let derivedAddress = '';
       try {
+        const pubkeyBuffer = typeof pubKeyHex === 'string' ? Buffer.from(pubKeyHex.trim(), 'hex') : pubKeyHex;
         const { address } = bitcoin.payments.p2wpkh({
-          pubkey: Buffer.from(pubKeyHex, 'hex'),
+          pubkey: pubkeyBuffer,
           network: PALLADIUM_NETWORK
         });
-        if (address) derivedAddress = address;
-      } catch {
-        // Keep raw hex if address derivation fails.
+        derivedAddress = address || '';
+      } catch (err) {
+        console.error('Failed to derive address from pubkey:', err);
       }
 
       contacts.push({
-        id: pubKeyHex,
+        id: pubKeyHex.trim(),
         address: derivedAddress,
         name,
         unread: 0

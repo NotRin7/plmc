@@ -63,7 +63,8 @@
     ],
     "extraResources": [],
     "win": {
-      "icon": "public/logo_3.png"
+      "icon": "public/logo_3.png",
+      "target": "portable"
     },
     "mac": {
       "icon": "public/logo_3.png"
