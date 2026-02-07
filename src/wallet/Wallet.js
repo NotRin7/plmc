@@ -212,6 +212,13 @@ export class Wallet {
 
     try {
       if (this.isElectrum()) {
+        // Ensure session is initialized for ElectrumX
+        try {
+          await this.rpc('server.version', ['palladium-secure-chat', '1.4']);
+        } catch (e) {
+          console.warn('Server version handshake failed, continuing anyway...', e);
+        }
+        
         await this.rpc('blockchain.headers.subscribe', []);
         const utxos = await this.getUtxos();
         balance = utxos.reduce((sum, utxo) => sum + utxo.amount, 0);

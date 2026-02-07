@@ -77,25 +77,24 @@ export async function rpcCall(config, method, params = []) {
       // Auto-switch to our optimized VPS endpoint if on our domain
       if (window.location.hostname.includes('palladium-coin.com') || config.ip === 'palladiumblockchain.net') {
         wsHost = 'wss.palladium-coin.com';
-        wsPort = '443'; // NPM will handle the SSL termination and proxy to 50004
+        wsPort = '443'; 
       }
       
       const ws = await getWebSocket(wsHost, wsPort);
-      
-      // Ensure session is initialized with server.version if needed
-      if (method !== 'server.version' && !ws.versionHandshake) {
-        ws.versionHandshake = true;
-        await rpcCall(config, 'server.version', ['palladium-secure-chat', '1.4']);
-      }
-
       const id = Math.floor(Math.random() * 1000000);
       const payload = JSON.stringify({ jsonrpc: '2.0', id, method, params });
       
       return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          ws.removeEventListener('message', handler);
+          reject(new Error(`WebSocket request timeout: ${method}`));
+        }, 15000);
+
         const handler = (event) => {
           try {
             const data = JSON.parse(event.data);
             if (data.id === id) {
+              clearTimeout(timeout);
               ws.removeEventListener('message', handler);
               if (data.error) reject(new Error(data.error.message));
               else resolve(data.result);

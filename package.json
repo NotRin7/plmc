@@ -64,7 +64,9 @@
     "extraResources": [],
     "win": {
       "icon": "public/logo_3.png",
-      "target": "portable"
+      "target": [
+        "portable"
+      ]
     },
     "mac": {
       "icon": "public/logo_3.png"
