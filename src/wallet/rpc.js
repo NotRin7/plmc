@@ -28,6 +28,40 @@ function resolveRpcHost(ip) {
   return ip;
 }
 
+const wsConnections = new Map();
+
+async function getWebSocket(host, port) {
+  const url = `wss://${host}:${port}`;
+  if (wsConnections.has(url)) {
+    const ws = wsConnections.get(url);
+    if (ws.readyState === WebSocket.OPEN) return ws;
+    if (ws.readyState === WebSocket.CONNECTING) {
+      return new Promise((resolve) => {
+        const check = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            clearInterval(check);
+            resolve(ws);
+          }
+        }, 100);
+      });
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(url);
+    wsConnections.set(url, ws);
+    const timeout = setTimeout(() => reject(new Error('WebSocket timeout')), 10000);
+    ws.onopen = () => {
+      clearTimeout(timeout);
+      resolve(ws);
+    };
+    ws.onerror = (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    };
+  });
+}
+
 export async function rpcCall(config, method, params = []) {
   if (config?.mode === 'electrum') {
     if (typeof window !== 'undefined' && window.electron?.rpc?.invoke) {
@@ -38,7 +72,30 @@ export async function rpcCall(config, method, params = []) {
         params
       });
     }
-    throw new Error('Electrum transport requires Electron');
+    
+    // Browser / Web Support via WebSocket
+    if (typeof window !== 'undefined' && typeof WebSocket !== 'undefined') {
+      const ws = await getWebSocket(config.ip === 'palladiumblockchain.net' ? 'wss.palladium-coin.com' : config.ip, config.port === '50002' ? '50004' : config.port);
+      const id = Math.floor(Math.random() * 1000000);
+      const payload = JSON.stringify({ jsonrpc: '2.0', id, method, params });
+      
+      return new Promise((resolve, reject) => {
+        const handler = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.id === id) {
+              ws.removeEventListener('message', handler);
+              if (data.error) reject(new Error(data.error.message));
+              else resolve(data.result);
+            }
+          } catch {}
+        };
+        ws.addEventListener('message', handler);
+        ws.send(payload + '\n');
+      });
+    }
+    
+    throw new Error('Electrum transport requires Electron or WebSocket support');
   }
 
   if (typeof window !== 'undefined' && window.electron?.rpc?.invoke) {
