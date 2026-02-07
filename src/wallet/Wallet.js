@@ -349,8 +349,11 @@ export class Wallet {
   async sendMessage(recipientPubKeyHex, message, amountPlm = 0) {
     if (!this.keyPair || !this.address) throw new Error('Wallet not loaded');
 
+    // Clean recipient pubkey
+    const targetPubKeyHex = recipientPubKeyHex.trim().toLowerCase();
+
     // Encrypt message with ECDH-derived shared secret (secp256k1) + AES-CBC.
-    const encrypted = this.encryptMessage(message, recipientPubKeyHex);
+    const encrypted = this.encryptMessage(message, targetPubKeyHex);
     const opReturnData = Buffer.concat([MESSAGE_PREFIX, Buffer.from(encrypted)]);
     const opReturnDataLength = opReturnData.length;
     const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
@@ -454,11 +457,11 @@ export class Wallet {
       value: 0
     });
 
-    if (!recipientPubKeyHex.match(/^[0-9a-fA-F]{66}$/) && !recipientPubKeyHex.match(/^[0-9a-fA-F]{130}$/)) {
-      throw new Error('Invalid Recipient Public Key.');
+    if (!targetPubKeyHex.match(/^[0-9a-fA-F]{66}$/) && !targetPubKeyHex.match(/^[0-9a-fA-F]{130}$/)) {
+      throw new Error('Invalid Recipient Public Key. Must be 66 or 130 hex characters.');
     }
 
-    const recipientPubKey = Buffer.from(recipientPubKeyHex, 'hex');
+    const recipientPubKey = Buffer.from(targetPubKeyHex, 'hex');
     const { address: recipientAddress } = bitcoin.payments.p2wpkh({
       pubkey: recipientPubKey,
       network: PALLADIUM_NETWORK
